@@ -1,6 +1,6 @@
 # Shipmnts API Boilerplate
 
-Simple Node.js/Express boilerplate with MongoDB for RESTful API development.
+A clean and scalable Node.js/Express boilerplate with MongoDB for RESTful API development. Perfect for coding interviews and rapid prototyping.
 
 ## Quick Start
 
@@ -23,12 +23,15 @@ Simple Node.js/Express boilerplate with MongoDB for RESTful API development.
 ## Project Structure
 
 ```
-├── config/database.js    # MongoDB connection
-├── models/              # MongoDB schemas
-│   └── User.js         # Sample User model
-├── routes/index.js      # Main routes
-├── server.js           # Main server
-└── package.json        # Dependencies
+├── config/
+│   └── database.js    # MongoDB connection configuration
+├── models/            # MongoDB schemas and models
+│     
+├── routes/
+│   └── index.js      # Main API routes
+├── server.js         # Express server setup
+├── package.json      # Dependencies and scripts
+└── README.md         # This file
 ```
 
 ## API Endpoints
@@ -38,20 +41,42 @@ Simple Node.js/Express boilerplate with MongoDB for RESTful API development.
 
 ## MongoDB Setup
 
-- Uses Mongoose ODM
-- Connection established on server startup
-- Sample User model included
-- Environment variable: `MONGODB_URI`
+- **ODM**: Mongoose for MongoDB object modeling
+- **Connection**: Established automatically on server startup
+- **Environment Variable**: `MONGODB_URI`
 
-## Interview Notes
+## Tech Stack
+
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Environment**: dotenv for configuration
+
+## Interview Guidelines
 
 - **Duration**: 1.5 hours
 - **Requirements**: Screen sharing, webcam on
-- **Tools**: Postman for testing
+- **Testing Tool**: Postman for API testing
 - **Stack**: Node.js/Express + MongoDB
 
-## Important
+## Important Notes
 
-- This is a boilerplate - NO business logic included
+- This is a **boilerplate** - NO business logic included
 - Modify based on the problem statement provided during the interview
-- Test the setup before the interview 
+- Test the setup before the interview
+- Ensure MongoDB is running and accessible
+
+## Available Scripts
+
+- `npm run dev` - Start development server with nodemon
+- `npm start` - Start production server
+- `npm test` - Run tests (if configured)
+
+## Environment Variables
+
+Create a `.env` file with the following variables:
+```
+MONGODB_URI=your_mongodb_connection_string
+PORT=3000
+NODE_ENV=development
+``` 
