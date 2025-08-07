@@ -5,17 +5,18 @@ export const calculatePrice = async (req, res) => {
     try {
         const { store_location, order_date, length, selections, extras } = req.body;
         
-        // Find the store
+        // Find the store error after interview till line 10
         const store = await Store.findOne({ store_location });
         if (!store) return res.status(404).json({ error: 'Store not found' });
         
         const date = new Date(order_date);
+        //error after interview till line 13
         const plan = await Plan.findOne({
             store_location,
             valid_from: { $lte: date },
             valid_to: { $gte: date }
         });
-        
+
         //if no plan exist the simply return
         if (!plan) return res.status(404).json({ error: 'Plan not found for valid date' });
         
@@ -26,6 +27,7 @@ export const calculatePrice = async (req, res) => {
             const item = plan.items.find(i => i.category === category && i.name === name);
             if (!item) return null;
             let price = (length === 'half' ? item.half_price : item.full_price);
+            //error after interview till line 29
             if (store.premium_items.includes(name)) price += item.extra_charge;
             return { name, price, category, isExtra };
         };
@@ -51,11 +53,12 @@ export const calculatePrice = async (req, res) => {
             }
         }
 
+        //error after interview till line 56
         const tax = (store.tax_percentage / 100) * total;
         const grandTotal = total + tax;
         
 
-        //sending the response finally
+        //sending the response finally 
         res.json({
             store_location,
             currency: store.currency,

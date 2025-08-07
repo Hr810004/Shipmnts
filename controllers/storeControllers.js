@@ -27,6 +27,7 @@ export const updateStore = async (req, res) => {
             req.body,
             { new: true }
         );
+        
         //if not found
         if (!store) return res.status(404).json({ message: 'Store not found' });
         //else
