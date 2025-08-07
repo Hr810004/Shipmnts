@@ -28,8 +28,14 @@ export const calculatePrice = async (req, res) => {
             if (!item) return null;
             let price = (length === 'half' ? item.half_price : item.full_price);
             //error after interview till line 29
-            if (store.premium_items.includes(name)) price += item.extra_charge;
-            return { name, price, category, isExtra };
+            if (store.premium_items && store.premium_items.includes(name)) {
+                // Premium calculation: base price + extra charge + 20% of base price
+                const premiumCharge = Math.round((price * 0.2) * 100) / 100;
+                price += item.extra_charge + premiumCharge;
+            } else {
+                price += item.extra_charge || 0;
+            }
+            return { name, rate: price, category, isExtra };
         };
 
         //for selected items
@@ -38,7 +44,7 @@ export const calculatePrice = async (req, res) => {
                 const entry = getPrice(cat, name);
                 if (entry) {
                     items.push(entry);
-                    total += entry.price;
+                    total += entry.rate;
                 }
             }
         }
@@ -48,7 +54,7 @@ export const calculatePrice = async (req, res) => {
                 const entry = getPrice(cat, name, true);
                 if (entry) {
                     items.push(entry);
-                    total += entry.price;
+                    total += entry.rate;
                 }
             }
         }
@@ -64,9 +70,9 @@ export const calculatePrice = async (req, res) => {
             currency: store.currency,
             length,
             items,
-            //upto two decimal
-            tax: tax.toFixed(2),
-            total: grandTotal.toFixed(2)
+            total_before_tax: total.toFixed(2),
+            tax_percentage: store.tax_percentage,
+            total_after_tax: grandTotal.toFixed(2)
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
