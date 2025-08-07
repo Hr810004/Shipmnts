@@ -1,0 +1,1303 @@
+{
+	"info": {
+		"_postman_id": "51c1cc5b-0488-422b-bff4-38d5a4b2f3e7",
+		"name": "Subway Sandwich Price Calculator API Copy 2",
+		"description": "Complete test suite for Subway Calculator API with 10 comprehensive test cases including sequential dependencies",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32118652"
+	},
+	"item": [
+		{
+			"name": "Test Case 1: Create Mumbai Store",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Store created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"    pm.expect(jsonData.message).to.eql(\"Store Created Successfully\");",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"currency\": \"INR\",\n  \"tax_percentage\": 6.0,\n  \"premium_items\": [\"Tomato\", \"Double Cheese\"]\n}"
+				},
+				"url": "{{base_url}}/store"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 2: Create Delhi Store",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Store created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});",
+							"",
+							"// Store Delhi location for later use",
+							"pm.globals.set(\"delhi_store\", \"Delhi\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Delhi\",\n  \"currency\": \"INR\",\n  \"tax_percentage\": 12.0,\n  \"premium_items\": [\"Paneer Tikka\", \"Lettuce\"]\n}"
+				},
+				"url": "{{base_url}}/store"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 3: Try Creating Duplicate Store (Should Fail)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 (Bad Request)\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Duplicate store creation rejected\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.false;",
+							"    pm.expect(jsonData.message).to.include(\"already exists\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"currency\": \"USD\",\n  \"tax_percentage\": 8.0,\n  \"premium_items\": [\"Cheese\"]\n}"
+				},
+				"url": "{{base_url}}/store"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 4: Update Mumbai Store",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Store updated successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"    pm.expect(jsonData.message).to.eql(\"Store Updated Successfully\");",
+							"});",
+							"",
+							"// Store updated tax percentage for calculation verification",
+							"pm.globals.set(\"mumbai_tax\", \"18.0\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"currency\": \"INR\",\n  \"tax_percentage\": 18.0,\n  \"premium_items\": [\"Tomato\", \"Lettuce\", \"Extra Cheese\"]\n}"
+				},
+				"url": "{{base_url}}/store/Mumbai"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 5: Create Mumbai Pricing Plan",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Plan created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"    pm.expect(jsonData.message).to.eql(\"Plan Created Successfully\");",
+							"    pm.globals.set('mumbai_plan_id', jsonData.plan_id);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"valid_from\": \"2025-07-01\",\n  \"valid_to\": \"2025-07-31\",\n \"items\": [\n    {\n      \"category\": \"bread\",\n      \"name\": \"Italian\",\n      \"half_price\": 20,\n      \"full_price\": 35,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"bread\",\n      \"name\": \"Whole Wheat\",\n      \"half_price\": 18,\n      \"full_price\": 32,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"Mayo\",\n      \"half_price\": 15,\n      \"full_price\": 28,\n      \"extra_charge\": 10\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"BBQ\",\n      \"half_price\": 15,\n      \"full_price\": 28,\n      \"extra_charge\": 10\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Lettuce\",\n      \"half_price\": 12,\n      \"full_price\": 25,\n      \"extra_charge\": 8\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Tomato\",\n      \"half_price\": 14,\n      \"full_price\": 27,\n      \"extra_charge\": 15\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}/plan"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 6: Create Delhi Pricing Plan",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Plan created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"    pm.expect(jsonData.plan_id).to.not.be.null;",
+							"    pm.globals.set('delhi_plan_id', jsonData.plan_id);",
+							"});",
+							"",
+							"// // Get all plans to find the created plan ID",
+							"// pm.sendRequest({",
+							"//     url: pm.globals.get('base_url') + '/plans',",
+							"//     method: 'GET'",
+							"// }, function (err, response) {",
+							"//     if (!err) {",
+							"//         var plans = response.json();",
+							"//         var delhiPlan = plans.find(plan => plan.store_location === 'Delhi');",
+							"//         if (delhiPlan) {",
+							"//             pm.globals.set('delhi_plan_id', delhiPlan.plan_id);",
+							"//         }",
+							"//     }",
+							"// });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Delhi\",\n  \"valid_from\": \"2025-07-01\",\n  \"valid_to\": \"2025-08-31\",\n \"items\": [\n    {\n      \"category\": \"bread\",\n      \"name\": \"Multigrain\",\n      \"half_price\": 22,\n      \"full_price\": 40,\n      \"extra_charge\": 15\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"Chipotle\",\n      \"half_price\": 18,\n      \"full_price\": 32,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Paneer Tikka\",\n      \"half_price\": 25,\n      \"full_price\": 45,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Onions\",\n      \"half_price\": 8,\n      \"full_price\": 15,\n      \"extra_charge\": 5\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}/plan"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 6.5: Store Doesnt exists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Plan created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.false;",
+							"    pm.expect(jsonData.message).to.not.eql(\"Plan Created Successfully\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"valid_from\": \"2025-07-01\",\n  \"valid_to\": \"2025-08-31\",\n \"items\": [\n    {\n      \"category\": \"bread\",\n      \"name\": \"Multigrain\",\n      \"half_price\": 22,\n      \"full_price\": 40,\n      \"extra_charge\": 15\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"Chipotle\",\n      \"half_price\": 18,\n      \"full_price\": 32,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Paneer Tikka\",\n      \"half_price\": 25,\n      \"full_price\": 45,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Onions\",\n      \"half_price\": 8,\n      \"full_price\": 15,\n      \"extra_charge\": 5\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}/plan"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 7: Get Delhi Plan Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Plan details retrieved successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.store_location).to.eql(\"Delhi\");",
+							"    pm.expect(jsonData.items).to.have.lengthOf(4);",
+							"});",
+							"",
+							"pm.test(\"Plan contains expected items\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var itemNames = jsonData.items.map(item => item.name);",
+							"    pm.expect(itemNames).to.include.members([\"Multigrain\", \"Chipotle\", \"Paneer Tikka\", \"Onions\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/plan/{{delhi_plan_id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 8: Calculate Mumbai Sandwich with Premium Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Calculation response structure is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('store_location');",
+							"    pm.expect(jsonData).to.have.property('currency');",
+							"    pm.expect(jsonData).to.have.property('length');",
+							"    pm.expect(jsonData).to.have.property('items');",
+							"    pm.expect(jsonData).to.have.property('total_before_tax');",
+							"    pm.expect(jsonData).to.have.property('tax_percentage');",
+							"    pm.expect(jsonData).to.have.property('total_after_tax');",
+							"});",
+							"",
+							"pm.test(\"Premium items have higher rates\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Find Tomato (premium) and Lettuce (premium) items",
+							"    var tomatoItem = jsonData.items.find(item => item.name === 'Tomato');",
+							"    var lettuceItem = jsonData.items.find(item => item.name === 'Lettuce');",
+							"    var ItalianItem = jsonData.items.find(item => item.name === 'Italian');",
+							"    var MayoItem = jsonData.items.find(item => item.name === 'Mayo');",
+							"    var BBQItem = jsonData.items.find(item => item.name === 'BBQ');",
+							"    ",
+							"    // Tomato: base(27) + extra(15) + premium(20% of 27 = 5.4 ≈ 5) = 47",
+							"    pm.expect(tomatoItem.rate).to.eql(47);",
+							"    ",
+							"    // Lettuce: base(25) + extra(8) + premium(20% of 25 = 5) = 38",
+							"    pm.expect(lettuceItem.rate).to.eql(38);",
+							"",
+							"    pm.expect(ItalianItem.rate).to.eql(35);",
+							"    pm.expect(MayoItem.rate).to.eql(38);",
+							"    pm.expect(BBQItem.rate).to.eql(28);",
+							"",
+							"",
+							"});",
+							"",
+							"pm.test(\"Tax calculation is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.tax_percentage).to.eql(18.0); // Updated tax rate",
+							"    var expectedTax = Math.round((jsonData.total_before_tax * 18.0 / 100) * 100) / 100;",
+							"    pm.expect(jsonData.total_after_tax).to.eql(219.48);",
+							"});",
+							"",
+							"// Store calculation result for PDF test",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set('mumbai_total', jsonData.total_after_tax);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"order_date\": \"2025-07-15\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\"],\n    \"sauce\": [\"Mayo\", \"BBQ\"],\n    \"veggie\": [\"Lettuce\", \"Tomato\"]\n  },\n  \"extras\": {\n    \"sauce\": [\"Mayo\"],\n    \"veggie\": [\"Tomato\", \"Lettuce\"]\n  }\n}"
+				},
+				"url": "{{base_url}}/calculate"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 9: Calculate Delhi Half Sandwich with PDF Generation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"PDF generation successful\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('pdf_path');",
+							"    pm.expect(jsonData.pdf_path).to.include('.pdf');",
+							"});",
+							"",
+							"pm.test(\"Half sandwich pricing is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.eql('half');",
+							"    ",
+							"    // Verify items use half prices",
+							"    var multigrainItem = jsonData.items.find(item => item.name === 'Multigrain');",
+							"    var paneerItem = jsonData.items.find(item => item.name === 'Paneer Tikka');",
+							"    ",
+							"    // Multigrain half price: 22",
+							"    pm.expect(multigrainItem.rate).to.eql(22);",
+							"    ",
+							"    // Paneer Tikka (premium): half(25) + premium(20% of 25 = 5) = 30",
+							"    pm.expect(paneerItem.rate).to.eql(30);",
+							"});",
+							"",
+							"pm.test(\"Delhi tax rate applied\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.tax_percentage).to.eql(12.0); // Delhi tax rate",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Delhi\",\n  \"order_date\": \"2025-07-20\",\n  \"length\": \"half\",\n  \"selections\": {\n    \"bread\": [\"Multigrain\"],\n    \"sauce\": [\"Chipotle\"],\n    \"veggie\": [\"Paneer Tikka\", \"Onions\"]\n  },\n  \"extras\": {\n    \"veggie\": [\"Onions\"]\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/calculate?pdf=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"calculate"
+					],
+					"query": [
+						{
+							"key": "pdf",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 10: Calculate with Missing Items (Average Pricing)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Missing items use category average\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Find the non-existent sauce item",
+							"    var unknownSauceItem = jsonData.items.find(item => item.name === 'Unknown Sauce');",
+							"    ",
+							"    // Mumbai sauce items: Mayo(28), BBQ(28), average = 28",
+							"    pm.expect(unknownSauceItem.rate).to.eql(28);",
+							"});",
+							"",
+							"pm.test(\"Existing items calculated normally\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    var italianItem = jsonData.items.find(item => item.name === 'Italian');",
+							"    pm.expect(italianItem.rate).to.eql(35); // Full price",
+							"});",
+							"",
+							"pm.test(\"Response includes all requested items\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.items).to.have.lengthOf(2);",
+							"    ",
+							"    var itemNames = jsonData.items.map(item => item.name);",
+							"    pm.expect(itemNames).to.include.members(['Italian', 'Unknown Sauce']);",
+							"});",
+							"",
+							"pm.test(\"Final totals are reasonable\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_before_tax).to.be.above(0);",
+							"    pm.expect(jsonData.total_after_tax).to.be.above(jsonData.total_before_tax);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"order_date\": \"2025-07-25\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\"],\n    \"sauce\": [\"Unknown Sauce\"]\n  }\n}"
+				},
+				"url": "{{base_url}}/calculate"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 11: Create Ahmedabad Store with High Premium Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Ahmedabad store created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"    pm.expect(jsonData.message).to.eql(\"Store Created Successfully\");",
+							"});",
+							"",
+							"// Store Ahmedabad details for later use",
+							"pm.globals.set(\"ahmedabad_tax\", \"5.0\");",
+							"pm.globals.set(\"ahmedabad_currency\", \"INR\");",
+							"",
+							"pm.test(\"Response time is acceptable\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"currency\": \"INR\",\n  \"tax_percentage\": 5.0,\n  \"premium_items\": [\"Italian\", \"Mayo\", \"BBQ\", \"Lettuce\", \"Tomato\", \"Extra Cheese\"]\n}"
+				},
+				"url": "{{base_url}}/store"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 12: Create Multiple Pricing Plans for Ahmedabad (Current and Future)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Current plan created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});",
+							"",
+							"// Create future plan after current one",
+							"setTimeout(function() {",
+							"    pm.sendRequest({",
+							"        url: pm.globals.get('base_url') + '/plan',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        },",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify({",
+							"                \"store_location\": \"Ahmedabad\",",
+							"                \"valid_from\": \"2025-09-01\",",
+							"                \"valid_to\": \"2025-09-30\",",
+							"                \"items\": [",
+							"                    {",
+							"                        \"category\": \"bread\",",
+							"                        \"name\": \"Italian\",",
+							"                        \"half_price\": 25,",
+							"                        \"full_price\": 45,",
+							"                        \"extra_charge\": null",
+							"                    },",
+							"                    {",
+							"                        \"category\": \"sauce\",",
+							"                        \"name\": \"Mayo\",",
+							"                        \"half_price\": 20,",
+							"                        \"full_price\": 35,",
+							"                        \"extra_charge\": 12",
+							"                    }",
+							"                ]",
+							"            })",
+							"        }",
+							"    }, function (err, response) {",
+							"        pm.test(\"Future plan also created\", function () {",
+							"            pm.expect(response.code).to.eql(200);",
+							"        });",
+							"    });",
+							"}, 100);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"valid_from\": \"2025-08-01\",\n  \"valid_to\": \"2025-08-31\",\n \"items\": [\n    {\n      \"category\": \"bread\",\n      \"name\": \"Italian\",\n      \"half_price\": 22,\n      \"full_price\": 40,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"bread\",\n      \"name\": \"Multigrain\",\n      \"half_price\": 24,\n      \"full_price\": 42,\n      \"extra_charge\": 8\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"Mayo\",\n      \"half_price\": 18,\n      \"full_price\": 32,\n      \"extra_charge\": 10\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"BBQ\",\n      \"half_price\": 16,\n      \"full_price\": 30,\n      \"extra_charge\": 12\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Lettuce\",\n      \"half_price\": 15,\n      \"full_price\": 28,\n      \"extra_charge\": 10\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Tomato\",\n      \"half_price\": 18,\n      \"full_price\": 32,\n      \"extra_charge\": 18\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Extra Cheese\",\n      \"half_price\": 25,\n      \"full_price\": 45,\n      \"extra_charge\": 20\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}/plan"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 13: Update Mumbai Store to Change Premium Items Mid-Month",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Mumbai store premium items updated\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});",
+							"",
+							"// Test calculation with updated premium items",
+							"setTimeout(function() {",
+							"    console.log(pm.globals.toObject())",
+							"    console.log(\"base_url (env):\", pm.environment.get(\"base_url\"));",
+							"console.log(\"base_url (collection):\", pm.collectionVariables.get(\"base_url\"));",
+							"console.log(\"base_url (global):\", pm.globals.get(\"base_url\"));",
+							"    pm.sendRequest({",
+							"        url: pm.globals.get('base_url') + '/calculate',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        },",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify({",
+							"                \"store_location\": \"Mumbai\",",
+							"                \"order_date\": \"2025-07-16\",",
+							"                \"length\": \"full\",",
+							"                \"selections\": {",
+							"                    \"bread\": [\"Italian\"],",
+							"                    \"sauce\": [\"BBQ\"],",
+							"                    \"veggie\": [\"Lettuce\"]",
+							"                }",
+							"            })",
+							"        }",
+							"    }, function (err, response) {",
+							"        console.log(err,response)",
+							"        // pm.expect(err).to.be.null; // Check for errors in the request",
+							"        var calcData = response.json();",
+							"        ",
+							"        pm.test(\"BBQ now has premium pricing\", function () {",
+							"            var bbqItem = calcData.items.find(item => item.name === 'BBQ');",
+							"            // BBQ: base(28) + premium(20% of 28 = 5.6 ≈ 5) = 33",
+							"            pm.expect(bbqItem.rate).to.eql(33);",
+							"        });",
+							"        ",
+							"        pm.test(\"Lettuce still has premium pricing\", function () {",
+							"            var lettuceItem = calcData.items.find(item => item.name === 'Lettuce');",
+							"            // Lettuce: base(25) + premium(20% of 25 = 5) = 30",
+							"            pm.expect(lettuceItem.rate).to.eql(30);",
+							"        });",
+							"    });",
+							"}, 200);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"currency\": \"INR\",\n  \"tax_percentage\": 18.0,\n  \"premium_items\": [\"BBQ\", \"Lettuce\", \"Italian\"]\n}"
+				},
+				"url": "{{base_url}}/store/Mumbai"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 14: Calculate Ahmedabad Sandwich with All Premium Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"All items have premium pricing applied\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Italian (premium): base(40) + premium(20% of 40 = 8) = 48",
+							"    var italianItem = jsonData.items.find(item => item.name === 'Italian');",
+							"    pm.expect(italianItem.rate).to.eql(48);",
+							"    ",
+							"    // Mayo (premium): base(32) + extra(10) + premium(20% of 32 = 6.4 ≈ 6) = 48",
+							"    var mayoItem = jsonData.items.find(item => item.name === 'Mayo');",
+							"    pm.expect(mayoItem.rate).to.eql(48);",
+							"    ",
+							"    // BBQ (premium): base(30) + premium(20% of 30 = 6) = 36",
+							"    var bbqItem = jsonData.items.find(item => item.name === 'BBQ');",
+							"    pm.expect(bbqItem.rate).to.eql(36);",
+							"    ",
+							"    // Lettuce (premium): base(28) + extra(10) + premium(20% of 28 = 5.6 ≈ 5) = 43",
+							"    var lettuceItem = jsonData.items.find(item => item.name === 'Lettuce');",
+							"    pm.expect(lettuceItem.rate).to.eql(43);",
+							"    ",
+							"    // Tomato (premium): base(32) + premium(20% of 32 = 6.4 ≈ 6) = 38",
+							"    var tomatoItem = jsonData.items.find(item => item.name === 'Tomato');",
+							"    pm.expect(tomatoItem.rate).to.eql(38);",
+							"});",
+							"",
+							"pm.test(\"Low Ahmedabad tax rate applied\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.tax_percentage).to.eql(5.0);",
+							"});",
+							"",
+							"pm.test(\"Total calculation with premium items\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var expectedSubtotal = 48 + 48 + 36 + 43 + 38; // 213",
+							"    pm.expect(jsonData.total_before_tax).to.eql(213);",
+							"    pm.expect(jsonData.total_after_tax).to.eql(223.65); // 213 * 1.05",
+							"});",
+							"",
+							"// Store result for comparison",
+							"var jsonData = pm.response.json();",
+							"pm.globals.set('ahmedabad_premium_total', jsonData.total_after_tax);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"order_date\": \"2025-08-15\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\"],\n    \"sauce\": [\"Mayo\", \"BBQ\"],\n    \"veggie\": [\"Lettuce\", \"Tomato\"]\n  },\n  \"extras\": {\n    \"sauce\": [\"Mayo\"],\n    \"veggie\": [\"Lettuce\"]\n  }\n}"
+				},
+				"url": "{{base_url}}/calculate"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 15: Test Date-Based Plan Selection (Future Date)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Future plan pricing applied correctly\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Italian from September plan: base(45) + premium(20% of 45 = 9) = 54",
+							"    var italianItem = jsonData.items.find(item => item.name === 'Italian');",
+							"    pm.expect(italianItem.rate).to.eql(54);",
+							"    ",
+							"    // Mayo from September plan: base(35) + extra(12) + premium(20% of 35 = 7) = 54",
+							"    var mayoItem = jsonData.items.find(item => item.name === 'Mayo');",
+							"    pm.expect(mayoItem.rate).to.eql(54);",
+							"});",
+							"",
+							"pm.test(\"Date validation works\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.store_location).to.eql('Ahmedabad');",
+							"    pm.expect(jsonData.length).to.eql('full');",
+							"});",
+							"",
+							"pm.test(\"Different pricing from August plan\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var septemberTotal = jsonData.total_after_tax;    ",
+							"    pm.expect(septemberTotal).to.be.equal(157.5);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"order_date\": \"2025-09-15\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\"],\n    \"sauce\": [\"Mayo\", \"BBQ\"],\n    \"veggie\": [\"Lettuce\", \"Tomato\"]\n  },\n  \"extras\": {\n    \"sauce\": [\"Mayo\"],\n    \"veggie\": [\"Lettuce\"]\n  }\n}"
+				},
+				"url": "{{base_url}}/calculate"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 16: Create Complex Mumbai Plan with Null Extra Charges",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Plan with null extra charges created\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});",
+							"",
+							"// Test calculation with items that have null extra charges",
+							"setTimeout(function() {",
+							"    pm.sendRequest({",
+							"        url: pm.globals.get('base_url') + '/calculate',",
+							"        method: 'POST',",
+							"        header: {",
+							"            'Content-Type': 'application/json'",
+							"        },",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify({",
+							"                \"store_location\": \"Mumbai\",",
+							"                \"order_date\": \"2025-08-16\",",
+							"                \"length\": \"half\",",
+							"                \"selections\": {",
+							"                    \"bread\": [\"Sourdough\"],",
+							"                    \"sauce\": [\"Honey Mustard\"],",
+							"                    \"veggie\": [\"Spinach\"]",
+							"                },",
+							"                \"extras\": {",
+							"                    \"bread\": [\"Sourdough\"],",
+							"                    \"sauce\": [\"Honey Mustard\"],",
+							"                    \"veggie\": [\"Spinach\"]",
+							"                }",
+							"            })",
+							"        }",
+							"    }, function (err, response) {",
+							"        var calcData = response.json();",
+							"        ",
+							"        pm.test(\"Items with null extra_charge don't add extra cost\", function () {",
+							"            // Sourdough: only base price since extra_charge is null",
+							"            var sourdoughItem = calcData.items.find(item => item.name === 'Sourdough');",
+							"            pm.expect(sourdoughItem.rate).to.eql(16); // half_price only",
+							"            ",
+							"            // Honey Mustard: only base price since extra_charge is null  ",
+							"            var honeyMustardItem = calcData.items.find(item => item.name === 'Honey Mustard');",
+							"            pm.expect(honeyMustardItem.rate).to.eql(12); // half_price only",
+							"        });",
+							"        ",
+							"        pm.test(\"Items with extra_charge work normally\", function () {",
+							"            var spinachItem = calcData.items.find(item => item.name === 'Spinach');",
+							"            // Spinach: base(10) + extra(6) = 16",
+							"            pm.expect(spinachItem.rate).to.eql(16);",
+							"        });",
+							"    });",
+							"}, 200);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"valid_from\": \"2025-08-01\",\n  \"valid_to\": \"2025-08-31\",\n \"items\": [\n    {\n      \"category\": \"bread\",\n      \"name\": \"Sourdough\",\n      \"half_price\": 16,\n      \"full_price\": 28,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"sauce\",\n      \"name\": \"Honey Mustard\",\n      \"half_price\": 12,\n      \"full_price\": 22,\n      \"extra_charge\": null\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Spinach\",\n      \"half_price\": 10,\n      \"full_price\": 18,\n      \"extra_charge\": 6\n    },\n    {\n      \"category\": \"veggie\",\n      \"name\": \"Cucumber\",\n      \"half_price\": 8,\n      \"full_price\": 15,\n      \"extra_charge\": null\n    }\n  ]\n}"
+				},
+				"url": "{{base_url}}/plan"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 17: Test Average Pricing with Multiple Missing Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Multiple missing items use category averages\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Find average-priced items",
+							"    var unknownBreadItem = jsonData.items.find(item => item.name === 'Garlic Bread');",
+							"    var unknownSauceItem = jsonData.items.find(item => item.name === 'Ranch');",
+							"    var unknownVeggie1 = jsonData.items.find(item => item.name === 'Bell Peppers');",
+							"    var unknownVeggie2 = jsonData.items.find(item => item.name === 'Jalapenos');",
+							"    ",
+							"    // Delhi bread average: (Multigrain: 40) = 40 (only one bread item)",
+							"    pm.expect(unknownBreadItem.rate).to.eql(40);",
+							"    ",
+							"    // Delhi sauce average: (Chipotle: 32) = 32 (only one sauce item)",
+							"    pm.expect(unknownSauceItem.rate).to.eql(32);",
+							"    ",
+							"    // Delhi veggie average: (Paneer Tikka: 45, Onions: 15) = 30",
+							"    pm.expect(unknownVeggie1.rate).to.eql(30);",
+							"    pm.expect(unknownVeggie2.rate).to.eql(30);",
+							"});",
+							"",
+							"pm.test(\"No extra charges for missing items\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    // Total should be sum of average prices only",
+							"    var expectedTotal = 40 + 32 + 30 + 30; // 132",
+							"    pm.expect(jsonData.total_before_tax).to.eql(132);",
+							"});",
+							"",
+							"pm.test(\"Delhi tax applied correctly\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.tax_percentage).to.eql(12.0);",
+							"    pm.expect(jsonData.total_after_tax).to.eql(147.84); // 132 * 1.12",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Delhi\",\n  \"order_date\": \"2025-07-25\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Garlic Bread\"],\n    \"sauce\": [\"Ranch\"],\n    \"veggie\": [\"Bell Peppers\", \"Jalapenos\"]\n  }\n}"
+				},
+				"url": "{{base_url}}/calculate"
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 18: Complex Calculation with Mixed Scenarios and PDF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"PDF generated for complex order\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('pdf_path');",
+							"    pm.expect(jsonData.pdf_path).to.include('.pdf');",
+							"});",
+							"",
+							"pm.test(\"Mixed existing and missing items calculated correctly\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Existing item: Italian with premium",
+							"    var italianItem = jsonData.items.find(item => item.name === 'Italian');",
+							"    // Italian (premium): base(35) + premium(20% of 35 = 7) = 42",
+							"    pm.expect(italianItem.rate).to.eql(42);",
+							"    ",
+							"    // Existing item: Mayo with extra and premium",
+							"    var mayoItem = jsonData.items.find(item => item.name === 'Mayo');",
+							"    // Mayo (premium): base(28) + extra(10)",
+							"    pm.expect(mayoItem.rate).to.eql(38);",
+							"    ",
+							"    // Missing item: should use sauce category average",
+							"    var unknownSauceItem = jsonData.items.find(item => item.name === 'Sriracha');",
+							"    // Mumbai sauce average: (Mayo: 28, BBQ: 28) = 28",
+							"    pm.expect(unknownSauceItem.rate).to.eql(28);",
+							"    ",
+							"    // Existing item: Lettuce with extra and premium",
+							"    var lettuceItem = jsonData.items.find(item => item.name === 'Lettuce');",
+							"    // Lettuce (premium): base(25) + extra(8) + premium(20% of 25 = 5) = 38",
+							"    pm.expect(lettuceItem.rate).to.eql(38);",
+							"});",
+							"",
+							"pm.test(\"Total calculation includes all scenarios\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var expectedSubtotal = 42 + 38 + 28 + 38; // 146",
+							"    pm.expect(jsonData.total_before_tax).to.eql(146);",
+							"    pm.expect(jsonData.total_after_tax).to.eql(172.28); // 146 * 1.18",
+							"});",
+							"",
+							"pm.test(\"Response structure is complete\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.items).to.have.lengthOf(4);",
+							"    pm.expect(jsonData.currency).to.eql('INR');",
+							"    pm.expect(jsonData.store_location).to.eql('Mumbai');",
+							"    pm.expect(jsonData.length).to.eql('full');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Mumbai\",\n  \"order_date\": \"2025-07-20\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\"],\n    \"sauce\": [\"Mayo\", \"Sriracha\"],\n    \"veggie\": [\"Lettuce\"]\n  },\n  \"extras\": {\n    \"sauce\": [\"Mayo\", \"Sriracha\"],\n    \"veggie\": [\"Lettuce\"]\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/calculate?pdf=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"calculate"
+					],
+					"query": [
+						{
+							"key": "pdf",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Case 20: Comprehensive End-to-End Test with Data Verification",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set up test data for comprehensive verification",
+							"pm.globals.set('test_order_total', 0);",
+							"pm.globals.set('test_items_count', 0);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"PDF generated successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('pdf_path');",
+							"    pm.expect(jsonData.pdf_path).to.match(/\\/.*\\/bill_\\d+\\.pdf$/);",
+							"});",
+							"",
+							"pm.test(\"All calculation scenarios work together\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Verify each item type is calculated correctly",
+							"    var items = jsonData.items;",
+							"    pm.expect(items).to.have.lengthOf(6);",
+							"    ",
+							"    // Existing bread with premium",
+							"    var italianItem = items.find(item => item.name === 'Italian');",
+							"    pm.expect(italianItem.rate).to.eql(48); // 40 + 8 premium",
+							"    ",
+							"    // Missing bread (should use average)",
+							"    var unknownBreadItem = items.find(item => item.name === 'Focaccia');",
+							"    pm.expect(unknownBreadItem.rate).to.eql(41); // Average of Italian(40) and Multigrain(42)",
+							"    ",
+							"    // Existing sauce with premium and extra",
+							"    var mayoItem = items.find(item => item.name === 'Mayo');",
+							"    pm.expect(mayoItem.rate).to.eql(48); // 32 + 10 extra + 6 premium",
+							"    ",
+							"    // Missing sauce (should use average)",
+							"    var unknownSauceItem = items.find(item => item.name === 'Tahini');",
+							"    pm.expect(unknownSauceItem.rate).to.eql(31); // Average of Mayo(32) and BBQ(30)",
+							"    ",
+							"    // Existing veggie with premium and extra",
+							"    var lettuceItem = items.find(item => item.name === 'Lettuce');",
+							"    pm.expect(lettuceItem.rate).to.eql(43); // 28 + 10 extra + 5 premium",
+							"    ",
+							"    // Existing veggie with premium (Extra Cheese)",
+							"    var cheeseItem = items.find(item => item.name === 'Extra Cheese');",
+							"    pm.expect(cheeseItem.rate).to.eql(54); // 45 + 9 premium",
+							"});",
+							"",
+							"pm.test(\"Final totals are mathematically correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Verify manual calculation",
+							"    var expectedSubtotal = 48 + 41 + 48 + 31 + 43 + 54; // 265",
+							"    pm.expect(jsonData.total_before_tax).to.eql(expectedSubtotal);",
+							"    ",
+							"    // Verify tax calculation (5% for Ahmedabad)",
+							"    var expectedTotal = Math.round(expectedSubtotal * 1.05 * 100) / 100;",
+							"    pm.expect(jsonData.total_after_tax).to.eql(expectedTotal);",
+							"});",
+							"",
+							"pm.test(\"Store configuration is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.store_location).to.eql('Ahmedabad');",
+							"    pm.expect(jsonData.currency).to.eql('INR');",
+							"    pm.expect(jsonData.tax_percentage).to.eql(5.0);",
+							"    pm.expect(jsonData.length).to.eql('full');",
+							"});",
+							"",
+							"pm.test(\"All data integrity checks pass\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    // Check that all requested items are in response",
+							"    var itemNames = jsonData.items.map(item => item.name);",
+							"    pm.expect(itemNames).to.include.members([",
+							"        'Italian', 'Focaccia', 'Mayo', 'Tahini', 'Lettuce', 'Extra Cheese'",
+							"    ]);",
+							"    ",
+							"    // Check that no item has zero or negative rate",
+							"    jsonData.items.forEach(function(item) {",
+							"        pm.expect(item.rate).to.be.above(0);",
+							"    });",
+							"    ",
+							"    // Check totals are positive and tax is applied",
+							"    pm.expect(jsonData.total_before_tax).to.be.above(0);",
+							"    pm.expect(jsonData.total_after_tax).to.be.above(jsonData.total_before_tax);",
+							"});",
+							"",
+							"// Final summary test",
+							"pm.test(\"End-to-end test completed successfully\", function () {",
+							"    console.log('=== TEST SUMMARY ===');",
+							"    console.log('Store: Ahmedabad');",
+							"    console.log('Total Items: ' + pm.response.json().items.length);",
+							"    console.log('Subtotal: ' + pm.response.json().total_before_tax);",
+							"    console.log('Tax: ' + pm.response.json().tax_percentage + '%');",
+							"    console.log('Final Total: ' + pm.response.json().total_after_tax);",
+							"    console.log('PDF Generated: ' + pm.response.json().pdf_path);",
+							"    console.log('===================');",
+							"    ",
+							"    pm.expect(true).to.be.true; // Always pass to show summary",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"store_location\": \"Ahmedabad\",\n  \"order_date\": \"2025-08-20\",\n  \"length\": \"full\",\n  \"selections\": {\n    \"bread\": [\"Italian\", \"Focaccia\"],\n    \"sauce\": [\"Mayo\", \"Tahini\"],\n    \"veggie\": [\"Lettuce\", \"Extra Cheese\"]\n  },\n  \"extras\": {\n    \"sauce\": [\"Mayo\"],\n    \"veggie\": [\"Lettuce\"]\n  }\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/calculate?pdf=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"calculate"
+					],
+					"query": [
+						{
+							"key": "pdf",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set base URL if not already set",
+					"if (!pm.globals.has('base_url')) {",
+					"    pm.globals.set('base_url', pm.collectionVariables.get(\"base_url\"));",
+					"}",
+					"",
+					"// Log current test case",
+					"console.log('Running: ' + pm.info.requestName);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test to ensure response format",
+					"pm.test(\"Response has valid JSON format\", function () {",
+					"    pm.response.to.be.json;",
+					"});",
+					"",
+					"// Log response for debugging",
+					"if (pm.response.code !== 200) {",
+					"    console.log('Error Response:', pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4000",
+			"type": "string"
+		}
+	]
+}
